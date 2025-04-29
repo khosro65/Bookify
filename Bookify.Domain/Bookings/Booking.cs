@@ -1,5 +1,6 @@
 ﻿using Bookify.Domain.Abstractions;
-using Bookify.Domain.Apartments;
+using Bookify.Domain.Bookings.Events;
+using Bookify.Domain.Shared;
 
 namespace Bookify.Domain.Bookings;
 
@@ -10,20 +11,29 @@ public sealed class Booking : Entity
         Guid apartmentId, 
         Guid userId, 
         DateRange duration, 
-        DateTime utcNow)
+        DateTime utcNow,
+        Money priceForPeriod,
+        Money amenitiesCharge,
+        Money cleaningFee,
+        Money totalPrice,
+        BookingStatus bookingStatus)
         : base(id)
     {
         ApartmentId = apartmentId;
         UserId = userId;
         Duration = duration;
-        UtcNow = utcNow;
+        CreatedOnUtc = utcNow;
+        PriceForPeriod = priceForPeriod;
+        AmenitiesUpCharge = amenitiesCharge;
+        CleaningFee = cleaningFee;
+        TotalPrice = totalPrice;
+        Status = bookingStatus;
     }
 
-    public Guid AppartmentId { get; private set; }
+    public Guid ApartmentId { get; private set; }
     public Guid UserId { get; private set; }
 
     public DateRange Duration { get; private set; }
-    public DateTime UtcNow { get; }
     public Money PriceForPeriod { get; private set; }
     public Money CleaningFee { get; private set; }
     public Money AmenitiesUpCharge { get; private set; }
@@ -35,13 +45,13 @@ public sealed class Booking : Entity
     public DateTime? RejectedOnUtc { get; private set; }
     public DateTime? CompletedOnUtc { get; private set; }
     public DateTime? CancelledOnUtc { get; private set; }
-    public Guid ApartmentId { get; }
 
     public static Booking Reserve(
         Guid apartmentId,
         Guid userId,
         DateRange duration,
-        DateTime utcNow
+        DateTime utcNow,
+        PricingDetails pricingDetails
         )
     {
         /*
@@ -53,9 +63,14 @@ public sealed class Booking : Entity
             apartmentId,
             userId,
             duration,
-            utcNow);
+            utcNow,
+            pricingDetails.PriceForPeriod,
+            pricingDetails.AmenitiesCharge,
+            pricingDetails.CleaningFee,
+            pricingDetails.TotalPrice,
+            BookingStatus.Reserved);
 
-
+        booking.RaiseDomainEvent(new BookingReserveDomainEvent(booking.Id));
         return booking;
     }
 }
