@@ -1,4 +1,5 @@
 ﻿using Bookify.Domain.Abstractions;
+using Bookify.Domain.Apartments;
 using Bookify.Domain.Bookings.Events;
 using Bookify.Domain.Shared;
 
@@ -47,20 +48,23 @@ public sealed class Booking : Entity
     public DateTime? CancelledOnUtc { get; private set; }
 
     public static Booking Reserve(
-        Guid apartmentId,
+        Apartment apartment,
         Guid userId,
         DateRange duration,
         DateTime utcNow,
-        PricingDetails pricingDetails
+        PricingService pricingService
         )
     {
         /*
          there is an issue that we missed a log of fields(prices) that need to calculated
         calculation of prices is not entity duty so we need to add domain service for calculation
          */
+
+        PricingDetails pricingDetails = pricingService.CalculatePrice(apartment, duration);
+
         Booking booking = new(
             Guid.NewGuid(),
-            apartmentId,
+            apartment.Id,
             userId,
             duration,
             utcNow,
@@ -71,6 +75,8 @@ public sealed class Booking : Entity
             BookingStatus.Reserved);
 
         booking.RaiseDomainEvent(new BookingReserveDomainEvent(booking.Id));
+
+        apartment.LastBookedOnUtc = utcNow;
         return booking;
     }
 }
