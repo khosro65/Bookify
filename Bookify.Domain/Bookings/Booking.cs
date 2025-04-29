@@ -74,7 +74,7 @@ public sealed class Booking : Entity
             pricingDetails.TotalPrice,
             BookingStatus.Reserved);
 
-        booking.RaiseDomainEvent(new BookingReserveDomainEvent(booking.Id));
+        booking.RaiseDomainEvent(new BookingReservedDomainEvent(booking.Id));
 
         apartment.LastBookedOnUtc = utcNow;
         return booking;
