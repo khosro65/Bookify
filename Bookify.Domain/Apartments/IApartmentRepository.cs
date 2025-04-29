@@ -2,5 +2,5 @@
 
 public interface IApartmentRepository
 {
-    Task<Apartment?> GEtByIdAsync(CancellationToken cancellationToken = default);
+    Task<Apartment?> GetByIdAsync(Guid apratmentId,CancellationToken cancellationToken = default);
 }
