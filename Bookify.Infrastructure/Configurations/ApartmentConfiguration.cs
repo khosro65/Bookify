@@ -34,7 +34,7 @@ internal sealed class ApartmentConfiguration : IEntityTypeConfiguration<Apartmen
                 .HasConversion(x => x.Code, code => Domain.Shared.Currency.FromCode(code));
         });
 
-
-
+        // shadow property 
+        builder.Property<uint>("Version").IsRowVersion();
     }
 }
