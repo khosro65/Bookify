@@ -42,6 +42,7 @@ internal sealed class BookingConfiguration : IEntityTypeConfiguration<Booking>
                 .HasConversion(x => x.Code, code => Currency.FromCode(code));
         });
 
+        builder.OwnsOne(booking => booking.Duration);
 
         builder.HasOne<Apartment>()
             .WithMany()
