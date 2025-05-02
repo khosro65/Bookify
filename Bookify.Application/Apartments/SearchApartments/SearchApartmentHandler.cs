@@ -10,7 +10,7 @@ namespace Bookify.Application.Apartments.SearchApartments;
 internal sealed class SearchApartmentHandler : IQueryHandler<SearchApartmentQuery, IReadOnlyList<ApartmentResponse>>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
-    private static readonly int[] ActiveBookingStatuses =
+    private static readonly List<int> ActiveBookingStatuses =
         [
             (int)BookingStatus.Reserved,
             (int)BookingStatus.Confirmed,
@@ -49,7 +49,7 @@ internal sealed class SearchApartmentHandler : IQueryHandler<SearchApartmentQuer
                      b.Id = a.Id AND
                      b.Duration_Start <= @EndDate AND
                      b.Duration_End >= @StartDate AND
-                     b.Status in (1,2,5)
+                     b.Status in @ActiveBookingStatuses
             )
             """;
 
@@ -64,7 +64,8 @@ internal sealed class SearchApartmentHandler : IQueryHandler<SearchApartmentQuer
             ,new
             {
                 StartDate = request.StartDate,
-                EndDate = request.EndDate
+                EndDate = request.EndDate,
+                ActiveBookingStatuses = ActiveBookingStatuses
             }
             ,
             splitOn: "Country"
