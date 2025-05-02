@@ -1,21 +1,27 @@
 ﻿
 using Bookify.Application.Abstractions.Exceptions;
+using Bookify.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Api.Middleware;
 
-public class GlobalExceptionHandlingMiddleware : IMiddleware
+public class GlobalExceptionHandlingMiddleware 
 {
-    private readonly ILogger _logger;
-    public GlobalExceptionHandlingMiddleware(ILogger logger)
+    private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
+    private readonly RequestDelegate _next;
+
+    public GlobalExceptionHandlingMiddleware(
+        ILogger<GlobalExceptionHandlingMiddleware> logger,
+        RequestDelegate next)
     {
         _logger = logger;
+        _next = next;
     }
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await next(context);
+            await _next(context);
         }
         catch (Exception exception)
         {
@@ -54,7 +60,7 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
                 Detail: "One or more validation errors has occurred",
                 Errors: validationException.Errors
                 ),
-
+           
             _ => new ExceptionDetails(
                 Status: StatusCodes.Status400BadRequest,
                 Type: "ServerError",

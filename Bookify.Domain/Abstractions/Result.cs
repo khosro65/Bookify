@@ -9,7 +9,7 @@ public class Result
         if (isSuccess && error != Error.None)
             throw new InvalidOperationException();
 
-        if(!isSuccess && error != Error.None)
+        if(!isSuccess && error == Error.None)
             throw new InvalidOperationException();
 
         IsSuccess = isSuccess;
