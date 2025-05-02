@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250502063638_initial")]
+    [Migration("20250502094125_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -31,7 +31,7 @@ namespace Bookify.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.PrimitiveCollection<string>("Amenities")
+                    b.Property<string>("Amenities")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -48,10 +48,10 @@ namespace Bookify.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<long>("Version")
+                    b.Property<byte[]>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bigint");
+                        .HasColumnType("rowversion");
 
                     b.HasKey("Id");
 

@@ -29,7 +29,7 @@ namespace Bookify.Infrastructure.Migrations
                     CleaningFee_Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastBookedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Amenities = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Version = table.Column<long>(type: "bigint", rowVersion: true, nullable: false)
+                    Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {

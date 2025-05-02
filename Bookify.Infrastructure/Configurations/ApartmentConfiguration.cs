@@ -1,6 +1,7 @@
 ﻿using Bookify.Domain.Apartments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Text.Json;
 
 namespace Bookify.Infrastructure.Configurations;
 
@@ -22,6 +23,11 @@ internal sealed class ApartmentConfiguration : IEntityTypeConfiguration<Apartmen
             .HasMaxLength(2000)
             .HasConversion(descripion => descripion.value, value => new Description(value));
 
+        builder.Property(x => x.Amenities)
+            .HasConversion(
+            x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
+            x => string.IsNullOrWhiteSpace(x) ? new List<Amenity>() : JsonSerializer.Deserialize<List<Amenity>>(x, (JsonSerializerOptions)null));
+
         builder.OwnsOne(x => x.Price, priceBuilder =>
         {
             priceBuilder.Property(mony => mony.Currency)
@@ -35,6 +41,6 @@ internal sealed class ApartmentConfiguration : IEntityTypeConfiguration<Apartmen
         });
 
         // shadow property 
-        builder.Property<uint>("Version").IsRowVersion();
+        builder.Property<byte[]>("Version").IsRowVersion().IsConcurrencyToken(); ;
     }
 }
