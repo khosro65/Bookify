@@ -30,15 +30,26 @@ internal sealed class SearchApartmentHandler : IQueryHandler<SearchApartmentQuer
 
         const string sql =
             """
-            SELECT * FROM Apartments a 
+            SELECT 
+                Id,
+                [Name],
+                [Description],
+                Price_Amount as [Price],
+                Price_Currency as [Currency],
+                Address_Country as [Country],
+                Address_Street as [Street],
+                Address_City as [City],
+                Address_State as [State],
+                Address_ZipCode as [ZipCode]            
+            FROM Apartments a 
             WHERE NOT EXISTS
             (
                 SELECT 1 FROM Bookings as b
                 WHERE
                      b.Id = a.Id AND
-                     b.StartDate <= @EndDate AND
-                     b.EndDate >= @StartDate AND
-                     b.Status in (@ActiveBookingStatuses)
+                     b.Duration_Start <= @EndDate AND
+                     b.Duration_End >= @StartDate AND
+                     b.Status in (1,2,5)
             )
             """;
 
@@ -53,9 +64,9 @@ internal sealed class SearchApartmentHandler : IQueryHandler<SearchApartmentQuer
             ,new
             {
                 StartDate = request.StartDate,
-                EndDate = request.EndDate,
-                ActiveBookingStatuses
-            },
+                EndDate = request.EndDate
+            }
+            ,
             splitOn: "Country"
             );
 
